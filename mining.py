@@ -12,7 +12,7 @@ def load_posts(login, password):
 
     vk = vk_session.get_api()
 
-    groups = vk.groups.search(q='Подслушано', sort=2, count=100)
+    groups = vk.groups.search(q='Подслушано', sort=2, count=50)
     group_names = [item['screen_name'] for item in groups['items'] if '18+' not in item['name']]
 
     group_posts = {}
