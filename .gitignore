@@ -130,3 +130,6 @@ dmypy.json
 
 # PyCharm
 .idea
+
+# VK config
+vk_config.v2.json
