@@ -1,5 +1,11 @@
 import sys
 import vk_api
+from nltk import sent_tokenize, wordpunct_tokenize, download
+from pymorphy2 import MorphAnalyzer
+
+download('punkt')
+download('wordnet')
+download('averaged_perceptron_tagger')
 
 
 def load_posts(login, password):
@@ -48,3 +54,25 @@ def load_posts(login, password):
 
     return group_data
 
+
+def to_corpora(group_data):
+    m = MorphAnalyzer()
+    for gr_num, name in enumerate(group_data):
+        print(f'processing "{name}", group {gr_num} of {len(group_data)}',
+              file=sys.stderr)
+        posts = group_data[name]['texts']
+        for i, post in enumerate(posts):
+            post = post.split('\n\n')
+            for j, paragraph in enumerate(post):
+                paragraph = sent_tokenize(paragraph)
+                for k, sentence in enumerate(paragraph):
+                    sentence = wordpunct_tokenize(sentence)
+                    for l, word in enumerate(sentence):
+                        p = m.parse(word)[0]
+                        word = {p.normal_form: p.tag.POS}
+                        sentence[l] = word
+                    paragraph[k] = sentence
+                post[j] = paragraph
+            posts[i] = post
+        group_data[name]['texts'] = posts
+    return group_data
